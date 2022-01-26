@@ -13,7 +13,7 @@ npm run dev
 ```
 
 **Sobre**
-<h3>Esta é uma RESTful API que permita:</h3>
+<h3>Esta é uma RESTful API que permite:</h3>
 <p>
 -   Fazer Login
 -   Cadastrar Usuário
@@ -382,4 +382,4 @@ Essa é a rota que será utilizada para cadastrar um produto associado ao usuár
 
 Essa é a rota que será chamada quando o usuario logado quiser excluir um dos seus produtos cadastrados.  
   
-  <h1 textAlign="center">Espero que gostem!</h1>
+  <h1 align="center">Espero que gostem!</h1>
