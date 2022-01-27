@@ -99,6 +99,25 @@ const login = async (req, res) => {
         return res.status(400).json(error.message);
     }
 }
+const obterUsuario = async (req, res) => {
+    const token = req.header('authorization');
+    
+    if (!token) {
+        return res.status(401).json({ "mensagem": "Para acessar este recurso um token de autenticação válido deve ser enviado." });
+    }
+
+    const id = req.params.id;
+
+    try {
+        const queryVericacaoEmail = "select * from usuarios where id = $1";
+        const usuario = await conexao.query(queryVericacaoEmail, [id]);
+        
+        return res.status(200).json(usuario.rows);
+    } catch (error) {
+        return res.status(401).json({error});
+    }
+    
+}
 
 
 
