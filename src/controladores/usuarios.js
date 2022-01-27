@@ -4,44 +4,27 @@ const jwt = require("jsonwebtoken");
 const jwt_Secret = require("../jwt_secret");
 
 const cadastrarUsuario = async (req, res) => {
-    const {
-        nome,
-        email,
-        senha,
-        nome_loja
-    } = req.body;
+    const { nome, email, senha, nome_loja } = req.body;
 
     if (!nome) {
-        return res.status(400).json({
-            "mensagem": "O campo nome é obrigatório"
-        });
+        return res.status(400).json({ "mensagem": "O campo nome é obrigatório" });
     }
     if (!email) {
-        return res.status(400).json({
-            "mensagem": "O campo email é obrigatório"
-        });
+        return res.status(400).json({ "mensagem": "O campo email é obrigatório" });
     }
     if (!senha) {
-        return res.status(400).json({
-            "mensagem": "O campo senha é obrigatório"
-        });
+        return res.status(400).json({ "mensagem": "O campo senha é obrigatório" });
     }
     if (!nome_loja) {
-        return res.status(400).json({
-            "mensagem": "O campo nome_loja é obrigatório"
-        });
+        return res.status(400).json({ "mensagem": "O campo nome_loja é obrigatório" });
     }
 
     try {
         const queryVerificacao = "select * from usuarios where email = $1";
-        const {
-            rowCount: quantidadeUsuarios
-        } = await conexao.query(queryVerificacao, [email]);
+        const { rowCount: quantidadeUsuarios } = await conexao.query(queryVerificacao, [email]);
 
         if (quantidadeUsuarios > 0) {
-            return res.status(400).json({
-                "mensagem": "Já existe usuário cadastrado com o e-mail informado."
-            });
+            return res.status(400).json({ "mensagem": "Já existe usuário cadastrado com o e-mail informado." });
         }
 
         const senhaCriptografada = await bcrypt.hash(senha, 10);
@@ -50,14 +33,10 @@ const cadastrarUsuario = async (req, res) => {
         const usuarioCadastrado = await conexao.query(queryCadastro, [nome, email, senhaCriptografada, nome_loja]);
 
         if (usuarioCadastrado.rowCount === 0) {
-            return res.status(400).json({
-                "mensagem": "Não foi possível cadastrar o usuário"
-            });
+            return res.status(400).json({ "mensagem": "Não foi possível cadastrar o usuário" });
         }
 
-        return res.status(200).json({
-            "mensagem": "Usuário cadastrado com sucesso"
-        });
+        return res.status(200).json({ "mensagem": "Usuário cadastrado com sucesso" });
     } catch (error) {
         return res.status(400).json(error);
     }
@@ -91,14 +70,13 @@ const login = async (req, res) => {
             return res.status(400).json('Usuário e/ou senha inválido(s).');
         }
 
-        const token = jwt.sign({
-            id: usuario.id
-        }, jwt_Secret);
+        const token = jwt.sign({ id:usuario.id}, jwt_Secret);
         return res.status(200).json(token);
     } catch (error) {
         return res.status(400).json(error.message);
     }
 }
+
 const obterUsuario = async (req, res) => {
     const token = req.header('authorization');
     
@@ -171,7 +149,6 @@ const atualizarUsuario = async (req, res) => {
     }
 
 }
-
 
 
 module.exports = {
