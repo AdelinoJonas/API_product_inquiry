@@ -63,6 +63,43 @@ const cadastrarUsuario = async (req, res) => {
     }
 }
 
+const login = async (req, res) => {
+    const {
+        email,
+        senha
+    } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json('O campo email e senha são obrigatórios.');
+    }
+
+    try {
+        const queryVerificaEmail = 'select * from usuarios where email = $1';
+        const {
+            rows,
+            rowCount
+        } = await conexao.query(queryVerificaEmail, [email]);
+
+        if (rowCount === 0) {
+            return res.status(404).json('Usuario não encontrado.');
+        }
+        const usuario = rows[0];
+
+        const SenhaVerificada = await bcrypt.compare(senha, usuario.senha);
+
+        if (!SenhaVerificada) {
+            return res.status(400).json('Usuário e/ou senha inválido(s).');
+        }
+
+        const token = jwt.sign({
+            id: usuario.id
+        }, jwt_Secret);
+        return res.status(200).json(token);
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
+}
+
 
 
 module.exports = {
