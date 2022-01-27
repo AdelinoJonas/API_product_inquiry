@@ -54,6 +54,56 @@ const obterProduto = async (req, res) => {
     }
 }
 
+const cadastrarProduto = async (req, res) => {
+    const { usuario } = req;
+    const { nome, quantidade, categoria, preco, descricao, imagem } = req.body;
+
+    if (!usuario) {
+        return res.status(401).json({ "mensagem": "Para cadastrar um produto, o usuário deve estar autenticado." });
+    }
+    if (!nome) {
+        return res.status(400).json({ "mensagem": "O nome do produto deve ser informado" });
+    }
+    if (quantidade <= 0) {
+        return res.status(400).json({ "mensagem": "A quantidade do produto deve ser maior que zero" });
+    }
+    if (!quantidade) {
+        return res.status(400).json({ "mensagem": "A quantidade do produto deve ser informada" });
+    }
+    if (!preco) {
+        return res.status(400).json({ "mensagem": "O preco do produto deve ser informado" });
+    }
+    if (!descricao) {
+        return res.status(400).json({ "mensagem": "A descrição do produto deve ser informada" });
+    }
+
+    try {
+        const queryVerificarProduto = 'select * from produtos where usuario_id = $1 and nome = $2';
+        const encontrarProduto= await conexao.query(queryVerificarProduto, [usuario.id, nome]);
+        
+        if(encontrarProduto.rowCount > 0){
+            res.status(400).json({ "mensagem": "Este produto já está cadastrado." });
+        }
+
+        const queryCadastro = `insert into produtos (usuario_id, nome, quantidade, categoria, preco, descricao, imagem)
+            values ($1, $2, $3, $4, $5, $6, $7)
+        `;
+        const produtoCadastrado = await conexao.query(queryCadastro,
+            [usuario.id, nome, quantidade, categoria, preco, descricao, imagem]
+        );
+
+        if (produtoCadastrado.rowCount === 0) {
+            return res.status(400).json({ "mensagem": "Não foi possível cadastrar o produto" });
+        }
+
+
+        return res.status(201).json({ "mensagem": "Produto cadastrado com sucesso." });
+    } catch (error) {
+        return res.status(400).json(error);
+    }
+}
+
+
 
 module.exports = {
     listarProdutos,
