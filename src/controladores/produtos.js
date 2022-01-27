@@ -161,7 +161,40 @@ const atualizarProduto = async (req, res) => {
     }
 }
 
+const deletarProduto = async (req, res) => {
+    const { usuario } = req;
+    const { id: produtoId } = req.params;
 
+    if (!usuario) {
+        return res.status(401).json({ "mensagem": "Para remover um produto, o usuário deve estar autenticado." });
+    }
+
+    try {
+        const queryObterProduto = "select * from produtos where id = $1";
+        const produtos = await conexao.query(queryObterProduto, [produtoId]);
+
+        if (produtos.rowCount === 0) {
+            return res.status(404).json({ "mensagem": `Não existe produto cadastrado com ID ${produtoId}.` });
+        }
+
+        const produto = produtos.rows[0];
+
+        if (produto.usuario_id !== usuario.id) {
+            return res.status(403).json({ "mensagem": "O usuário logado não tem permissão para remover este produto." });
+        }
+
+        const queryRemoverProduto = `delete from produtos where id = $1`;
+        const produtoRemovido = await conexao.query(queryRemoverProduto, [produtoId]);
+
+        if (produtoRemovido.rowCount === 0) {
+            return res.status(400).json({ "mensagem": "Não foi possível remover o produto" });
+        }
+
+        return res.status(200).json({ "mensagem": "Produto deletado com sucesso." });
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+}
 
 module.exports = {
     listarProdutos,
