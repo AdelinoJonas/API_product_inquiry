@@ -1,8 +1,6 @@
 <h1 align="center">API_product_inquiry
 </h1>
 
-**git clone https://github.com/rulianajarno/rulimovieapp.git**
-
 Abrir o repositório no editor de código de sua preferência e rode os comandos abaixo para instalar os pacotes e rodar a aplicação no servidor local.
  
 ```javascript
